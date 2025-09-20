@@ -2,10 +2,21 @@
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 
+const CMS_URL = process.env.PUBLIC_SITE_URL // e.g. https://cms.skylineroofing-systems.com in prod
+const LOCAL_URL = 'http://localhost:3000'
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN // optional: e.g. https://www.skylineroofing-systems.com
+
+const allowlist = [CMS_URL, LOCAL_URL, FRONTEND_ORIGIN].filter(Boolean) as string[]
+
 export default buildConfig({
-  serverURL: process.env.PUBLIC_SITE_URL, // http://localhost:3000 in dev
-  cors: ['http://localhost:3000'],
-  csrf: ['http://localhost:3000'],
+  // REQUIRED in v3
+  secret: process.env.PAYLOAD_SECRET!,
+
+  serverURL: CMS_URL,
+
+  // Allow admin/API requests from your CMS domain, localhost, and optional frontend
+  cors: allowlist,
+  csrf: allowlist,
 
   admin: { user: 'users' },
 
@@ -17,7 +28,7 @@ export default buildConfig({
     },
     {
       slug: 'media',
-      upload: true,               // keep your existing Media collection if you had one
+      upload: true,
       fields: [],
     },
     {
@@ -29,8 +40,8 @@ export default buildConfig({
         { name: 'publishedAt', type: 'date' },
       ],
       access: {
-        read: () => true,                 // public can read
-        create: ({ req }) => !!req.user,  // only logged-in admin can write
+        read: () => true,
+        create: ({ req }) => !!req.user,
         update: ({ req }) => !!req.user,
         delete: ({ req }) => !!req.user,
       },
@@ -40,6 +51,6 @@ export default buildConfig({
 
   db: postgresAdapter({
     pool: { connectionString: process.env.DATABASE_URI },
-    schemaName: 'payload', // keep Payload tables isolated
+    schemaName: 'payload',
   }),
 })
