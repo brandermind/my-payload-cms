@@ -1,31 +1,25 @@
-# netlify.toml
 [build]
 command = "npm run build"
 publish = ".next"
 
-# Pin Node for reproducible builds
 [build.environment]
 NODE_VERSION = "20"
-# ✅ Allowlist public URL keys so secrets scanning won't fail on your domain
+NODE_OPTIONS = "--dns-result-order=ipv4first"
 SECRETS_SCAN_OMIT_KEYS = "PUBLIC_SITE_URL,NEXT_PUBLIC_SITE_URL"
 
-# If you have a custom webpack() override and want to avoid Turbopack in CI:
 [context.production.environment]
 NEXT_DISABLE_TURBOPACK = "1"
 
-# Redirect the root to the Payload Admin UI
 [[redirects]]
 from = "/"
 to = "/admin"
 status = 301
 force = true
 
-# Long cache for Next.js static assets
 [[headers]]
 for = "/_next/static/*"
   [headers.values]
   Cache-Control = "public, max-age=31536000, immutable"
 
-# (Optional but recommended) Make the Next.js runtime explicit in source control
 [[plugins]]
 package = "@netlify/plugin-nextjs"
