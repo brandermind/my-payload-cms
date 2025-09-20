@@ -1,23 +1,32 @@
 // payload.config.ts
+import dns from 'node:dns'
+dns.setDefaultResultOrder?.('ipv4first') // prefer IPv4; no-op if unsupported
+
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 
 const isProd = process.env.NODE_ENV === 'production'
+
 const CMS_URL =
-  process.env.PUBLIC_SITE_URL
-  ?? process.env.NEXT_PUBLIC_SITE_URL
-  ?? process.env.URL           // Netlify primary site URL
-  ?? process.env.DEPLOY_URL    // Netlify per-deploy URL (fallback)
-  ?? (isProd ? undefined : 'http://localhost:3000')
+  process.env.PUBLIC_SITE_URL ??
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  process.env.URL ??           // Netlify primary site URL
+  process.env.DEPLOY_URL ??    // Netlify preview URL
+  (isProd ? undefined : 'http://localhost:3000')
 
 if (isProd && !CMS_URL) {
-  throw new Error('CMS_URL is required in production. Set PUBLIC_SITE_URL or NEXT_PUBLIC_SITE_URL in Netlify.')
+  throw new Error('CMS_URL is required in production. Set PUBLIC_SITE_URL (or NEXT_PUBLIC_SITE_URL) in Netlify.')
+}
+
+const PAYLOAD_SECRET = process.env.PAYLOAD_SECRET
+if (isProd && !PAYLOAD_SECRET) {
+  throw new Error('PAYLOAD_SECRET is required in production.')
 }
 
 const allowlist = isProd ? [CMS_URL!] : [CMS_URL!, 'http://localhost:3000']
 
 export default buildConfig({
-  secret: process.env.PAYLOAD_SECRET ?? '',
+  secret: PAYLOAD_SECRET || 'dev-secret',
   serverURL: CMS_URL!,
   cors: allowlist,
   csrf: allowlist,
@@ -46,6 +55,7 @@ export default buildConfig({
   ],
 
   db: postgresAdapter({
+    // Use Supabase PGBouncer (serverless-safe) in production
     pool: { connectionString: process.env.DATABASE_URI },
     schemaName: 'payload',
   }),

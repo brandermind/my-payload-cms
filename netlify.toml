@@ -1,10 +1,11 @@
+# netlify.toml
 [build]
 command = "npm run build"
 publish = ".next"
 
 [build.environment]
 NODE_VERSION = "20"
-NODE_OPTIONS = "--dns-result-order=ipv4first"
+# Allowlist public URL keys so secrets scanning won't fail on your domain
 SECRETS_SCAN_OMIT_KEYS = "PUBLIC_SITE_URL,NEXT_PUBLIC_SITE_URL"
 
 [context.production.environment]
