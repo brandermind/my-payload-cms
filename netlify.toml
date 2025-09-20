@@ -1,0 +1,12 @@
+# netlify.toml
+[build]
+command = "npm run build"
+publish = ".next"
+
+[build.environment]
+NODE_VERSION = "20"
+
+# If you have a custom webpack() override and want to avoid Turbopack in CI:
+# (optional, but often quieter)
+[context.production.environment]
+NEXT_DISABLE_TURBOPACK = "1"
