@@ -6,6 +6,7 @@
 .pnp.js
 .yarn/install-state.gz
 
+# JetBrains IDE
 /.idea/*
 !/.idea/runConfigurations
 
@@ -15,13 +16,16 @@
 # next.js
 /.next/
 /out/
+/.turbo
 
 # production
 /build
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
+*.log
 
 # debug
 npm-debug.log*
@@ -29,6 +33,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -38,12 +43,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.env
-
+# media uploads (Payload stores locally in dev, ignore them in Git)
 /media
 
-# Playwright
-node_modules/
+# Playwright / E2E
 /test-results/
 /playwright-report/
 /blob-report/
