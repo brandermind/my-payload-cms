@@ -2,35 +2,31 @@
 import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 
-const CMS_URL = process.env.PUBLIC_SITE_URL // e.g. https://cms.skylineroofing-systems.com in prod
-const LOCAL_URL = 'http://localhost:3000'
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN // optional: e.g. https://www.skylineroofing-systems.com
+const isProd = process.env.NODE_ENV === 'production'
+const CMS_URL =
+  process.env.PUBLIC_SITE_URL
+  ?? process.env.NEXT_PUBLIC_SITE_URL
+  ?? process.env.URL           // Netlify primary site URL
+  ?? process.env.DEPLOY_URL    // Netlify per-deploy URL (fallback)
+  ?? (isProd ? undefined : 'http://localhost:3000')
 
-const allowlist = [CMS_URL, LOCAL_URL, FRONTEND_ORIGIN].filter(Boolean) as string[]
+if (isProd && !CMS_URL) {
+  throw new Error('CMS_URL is required in production. Set PUBLIC_SITE_URL or NEXT_PUBLIC_SITE_URL in Netlify.')
+}
+
+const allowlist = isProd ? [CMS_URL!] : [CMS_URL!, 'http://localhost:3000']
 
 export default buildConfig({
-  // REQUIRED in v3
-  secret: process.env.PAYLOAD_SECRET!,
-
-  serverURL: CMS_URL,
-
-  // Allow admin/API requests from your CMS domain, localhost, and optional frontend
+  secret: process.env.PAYLOAD_SECRET ?? '',
+  serverURL: CMS_URL!,
   cors: allowlist,
   csrf: allowlist,
 
   admin: { user: 'users' },
 
   collections: [
-    {
-      slug: 'users',
-      auth: true,
-      fields: [{ name: 'role', type: 'text' }],
-    },
-    {
-      slug: 'media',
-      upload: true,
-      fields: [],
-    },
+    { slug: 'users', auth: true, fields: [{ name: 'role', type: 'text' }] },
+    { slug: 'media', upload: true, fields: [] },
     {
       slug: 'posts',
       fields: [
