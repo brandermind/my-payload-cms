@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.56.0",
-    "@payloadcms/next": "3.56.0",
+    "@payloadcms/next": "^3.56.0",
     "@payloadcms/payload-cloud": "3.56.0",
     "@payloadcms/richtext-lexical": "3.56.0",
     "@payloadcms/ui": "3.56.0",
@@ -27,7 +27,7 @@
     "dotenv": "16.4.7",
     "graphql": "^16.8.1",
     "next": "^15.5.3",
-    "payload": "3.56.0",
+    "payload": "^3.56.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "sharp": "0.34.2"
